@@ -3,56 +3,68 @@
         <!-- 真正的内容区 -->
       <div class="login-wrap">
            <ul class="menu-tab">
-              <li v-for="item in menuTab" :key="item.id" :class="{'current': item.current}" @click="toggleMneu(item)">{{ item.txt }}</li>
+              <li v-for="item in menuTab" :key="item.id" :class="{'current': item.current}" @click="toggleMenu(item)">{{ item.txt }}</li>
            </ul>
            <!---  表单的开始-->
-           <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm"  class="login-form" size="medium">
+           <el-form :model="ruleForm" status-icon :rules="rules" ref="loginForm"  class="login-form" size="medium">
 
              <el-form-item  prop="username" class="item=from">
-                 <lable>邮箱：</lable>
-                <el-input type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
+                 <lable for="username">邮箱：</lable>
+                <el-input id="username" type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
              </el-form-item>
 
              <el-form-item  prop="password" class="item=from">
-                 <lable>密码：</lable>
-                 <el-input type="text" v-model="ruleForm.password" autocomplete="off" minlength="6" maxlength="20"></el-input>
+                 <lable for="password">密码：</lable>
+                 <el-input id="passoword" type="text" v-model="ruleForm.password" autocomplete="off" minlength="6" maxlength="20"></el-input>
              </el-form-item>
 
               <el-form-item  prop="passwords" class="item=from" v-show="model == 'register'">
-                 <lable>重复密码：</lable>
-                 <el-input type="text" v-model="ruleForm.passwords" autocomplete="off" minlength="6" maxlength="20"></el-input>
+                 <lable for="repassword">重复密码：</lable>
+                 <el-input id="repassword" type="text" v-model="ruleForm.passwords" autocomplete="off" minlength="6" maxlength="20"></el-input>
              </el-form-item>
 
 
              <el-form-item  prop="code" class="item=from">
-                 <lable>验证码：</lable>
+                 <lable for="code">验证码：</lable>
 
                 <el-row :gutter="10">
                     <el-col :span="15">
-                        <el-input  v-model.number="ruleForm.code" minlength="6" maxlength="6"></el-input>
+                        <el-input id="code"  v-model="ruleForm.code" minlength="6" maxlength="6"></el-input>
                     </el-col>
                     <el-col :span="9">
-                      <el-button type="success" class="block" >获取验证码</el-button>  
+                      <el-button type="success" class="block" @click="getSms()" :disabled="codeButtonStatus.status" >{{codeButtonStatus.text}}</el-button>  
                     </el-col>
                 </el-row>
              </el-form-item>
 
              <el-form-item >
-                <el-button type="danger" @click="submitForm('ruleForm')" class="login-btn block">提交</el-button>
+                <el-button type="danger" @click="submitForm('loginForm')" class="login-btn block"  :disabled="loginButtonStatus">{{model === "login" ? "登录" :"注册"}}</el-button>
              </el-form-item>
           </el-form>
       </div>
     </div>
 </template>
 <script>
-import { stripscript,validateEmail,validatePwd,validateVCode } from '@/utils/validate'
+import sha1 from "js-sha1";
+import { GetSms, Register, Login } from "@/api/login";
+import { reactive , ref, onMounted } from "@vue/composition-api";
+import { stripscript,validateEmail,validatePwd,validateVCode } from "@/utils/validate";
 
 export default {
     name: 'login',
-    data(){
-      
-      //验证用户名邮箱
-      var validateUsername = (rule, value, callback) => {
+    // setup(props,context){
+    //   console.log(context)
+    //   attrs: (...)     this.$attrs
+    //   emit: (...)      this.$emit
+    //   isServer: (...)  this.$isServer
+    //   listeners: (...) this.$listeners
+    //   parent: (...)    this.$parent
+    //   refs: (...)      this.$refs
+    //   root: (...)  ===  this.
+     setup(props,{ refs,root }){
+
+         //验证用户名邮箱
+      let validateUsername = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入用户名'));
         } else if(validateEmail(value)){
@@ -62,10 +74,10 @@ export default {
         }
       };
       //验证密码
-      var validatePassword = (rule, value, callback) => {
+      let validatePassword = (rule, value, callback) => {
 
-        this.ruleForm.password = stripscript(value)
-        value = this.ruleForm.password
+        ruleForm.password = stripscript(value)
+        value = ruleForm.password
 
         if (value === '') {
           callback(new Error('请输入密码'));
@@ -77,16 +89,16 @@ export default {
       };
 
 
-       //验证重复密码
-       var validatePasswords = (rule, value, callback) => {
+      //验证重复密码
+      let validatePasswords = (rule, value, callback) => {
         //如果页面为login的时候，直接通过
-        if(this.model === 'login') {callback();}
-        this.ruleForm.passwords = stripscript(value)
-        value = this.ruleForm.passwords
+        if(model.value === 'login') {callback();}
+        ruleForm.passwords = stripscript(value)
+        value = ruleForm.passwords
 
         if (value === '') {
           callback(new Error('请再次输入密码'));
-        } else if (value !=  this.ruleForm.password){
+        } else if (value !=  ruleForm.password){
             callback(new Error("密码输入不正确，请检查后再次输入"))
         } else {
           callback();
@@ -95,33 +107,54 @@ export default {
 
 
       //y验证验证码
-    var checkCode = (rule, value, callback) => {
-        this.ruleForm.code = stripscript(value)
-        value = this.ruleForm.code 
+      let checkCode = (rule, value, callback) => {
+         ruleForm.code = stripscript(value)
+         value = ruleForm.code 
 
           if (value === '') {
-          callback(new Error('请输入验证码'));
-        } else if (validateVCode(value)){
+            callback(new Error('请输入验证码'));
+          }else if (validateVCode(value)){
             callback(new Error("密码为6-20位的数字与字母组合"))
-        } else {
-          callback();
+          }else {
+            callback();
         }
-      
       };
-        return{
-           menuTab:[
-               {txt: '登录', current: true, type: 'login' },
-               {txt: '注册', current: false, type: 'register' }
-           ],
-           //表单的验证
-           model : 'register',
-            ruleForm: {
+
+
+        /** 
+         * 声明数据
+        */
+
+        // 这里面放置data数据，生命周期，自定义函数
+        const menuTab = reactive([
+            {txt: '登录', current: true, type: 'login' },
+            {txt: '注册', current: false, type: 'register' }
+           ]);
+        //模块值
+        const model = ref('login');
+        //表单提交按钮状态 
+        const loginButtonStatus = ref(true);
+        //验证码按钮状态
+        // const codeButtonStatus = ref(false)
+        // const codeButtonText = ref('获取验证码')
+
+        //相同的东西用对象
+        const codeButtonStatus = reactive({
+          status: false,
+          text: '获取验证码'
+        });
+
+        //倒计时
+        const timer = ref(null);
+        //表单绑定数据
+        const ruleForm = reactive({
             username: '',
             password: '',
             passwords: '',
             code: ''
-            },
-            rules: {
+        });
+        //表单的验证
+        const rules = reactive ({
             username: [
                 { validator: validateUsername, trigger: 'blur' }
             ],
@@ -134,42 +167,210 @@ export default {
             code: [
                 { validator: checkCode, trigger: 'blur' }
             ]
-            }
-        };
-    
-    },
-    //钩子函数
-    created(){},
-    //挂载完成后自动执行的
-    mounted(){},
-    //写函数的地方
-    methods:{
-        //vue 数据驱动视频渲染
-        //js 操作DOM元素
-        toggleMneu(data){
-            this.menuTab.forEach(element => {
+        })
+
+        /**
+         * 声明函数
+         */
+         const toggleMenu = (data => {
+             menuTab.forEach(element => {
                 element.current = false
             });
             //高光
             data.current = true
             //修改当前模块的值
-            this.model = data.type
-        },
-        submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
+            model.value = data.type
+            //切换页面的时候 重置表单
+            //2.0的写法 this.$refs[formName].resetFields();
+            refs.loginForm.resetFields();
+            clearCountDown();
+
+         })
+
+
+        /**
+         * 获取验证码
+         */
+        const getSms = (() =>{
+          //请求的接口
+          //验证邮箱 进行响应
+          if(ruleForm.username == ""){
+            root.$message.error('邮箱不可为空！');
+            return false
           }
-        });
-      },
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
-      }
-    }
+          if(validateEmail(ruleForm.username)){
+            root.$message.error('邮箱格式有误，请重新输入！');
+            return false
+          }
+          //获取验证码
+          let requestData ={
+              username: ruleForm.username,
+              module : model.value
+          }
+          // const updateButtonStatus = ((params) => {
+          // //更新验证码状态
+          //    codeButtonStatus.status = params.status,
+          //    codeButtonStatus.text = params.text
+          //  })
+          //修改获取验证码状态
+          // updateButtonStatus({
+          //   status: true,
+          //   text: '发送中'
+          // })
+           codeButtonStatus.status = true,
+           codeButtonStatus.text = '发送中'
+        
+          //延时多长时间
+          GetSms(requestData).then(response =>{
+              let data = response.data
+              root.$message({
+                message: data.message,
+                type: 'success'
+              })
+              //启动登录或者注册按钮
+              loginButtonStatus.value = false
+              //调用定时器的方法,直接倒计时
+              countDown(60)
+            }).catch(error =>{
+              console.log(error)
+           })
+        })
+        /**
+         * 表单提交验证
+         */
+        const submitForm = (formName => {
+
+            refs[formName].validate((valid) => {
+              //表单验证通过
+            if (valid) {
+              //三元运算
+              model.value === 'login' ? login() : register();
+              
+            } else {
+              console.log('error submit!!');
+              return false;
+            }
+          })
+        })
+
+      //
+        /**
+         * 登录
+         */
+        const login = (() => {
+           let requestData = {
+                username: ruleForm.username,
+                password:sha1(ruleForm.password),
+                code: ruleForm.code,
+                module: 'register'
+              }
+            Login(requestData).then(response => {
+              console.log("登录成功");
+               console.log(response);
+            }).catch(error => {
+
+            })
+        })
+
+        /**
+         * 注册
+         */
+        const register = (() => {
+            let requestData = {
+                  username: ruleForm.username,
+                  password: sha1(ruleForm.password),
+                  code: ruleForm.code,
+                  module: 'register'
+              }
+              //注册接口
+              Register(requestData).then(response => {
+                let data = response.data
+                root.$message({
+                  message: data.message,
+                  type: 'success'
+                })
+              //模拟注册成功
+               toggleMenu(menuTab[0])
+               clearCountDown()
+              }).catch(error => {
+                  //失败执行的代码
+              })
+        })
+
+
+        /**
+         * 倒计时方法
+         */
+        const countDown =((number) => {
+          //判断定时器是否存在，若存在则清除
+          if(timer.value){
+            clearInterval(timer.value)
+          }
+            //setTimeout   clearTimeout()执行一次
+            //setInterval   clearInterval(变量)不断的执行，需要条件才会停止
+            let time = number
+            console.log(time)
+          timer.value = setInterval(() => {
+              time --;
+              console.log(time)
+              if(time === 0){
+                  clearInterval(timer.value);
+
+                  // updateButtonStatus({
+                  //   status:false,
+                  //   text: '重新发送'
+                  // })
+
+                  codeButtonStatus.status = false
+                  codeButtonStatus.text = '重新发送'
+              }else{
+                  codeButtonStatus.text = `倒计时${time}秒`  //ES6的写法
+              }                
+          },1000)
+        })
+
+      /**
+       * 清除倒计时
+       */
+      const clearCountDown = (() => {
+        //还原验证码按钮默认状态
+        // updateButtonStatus({
+        //             status : false,
+        //             text : '获取验证码'
+        //  })
+        codeButtonStatus.status = false;
+        codeButtonStatus.text = '获取验证码';
+        //清除倒计时
+        clearInterval(timer.value);
+      })
+
+        /**
+         * 生命周期
+         */
+        //挂载完成后
+        onMounted( () => {
+           // GetSms()
+        })
+
+        return{
+            menuTab,
+            model,
+            toggleMenu,
+            submitForm,
+            ruleForm,
+            rules,
+            getSms,
+            loginButtonStatus,
+            codeButtonStatus,
+            timer,
+            countDown
+        }
+    },
+    
 }
+   
+        
+
 </script>
 <style lang="scss" scoped>
 #login{

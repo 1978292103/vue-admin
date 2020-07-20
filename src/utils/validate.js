@@ -32,6 +32,7 @@ export function validatePwd(value){
  * 验证码的效验
  */
 export function validateVCode(value){
-    let reg = /^[0-z0-9]{6}$/
+    //let reg = /^[0-z0-9]{6}$/
+    let reg = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]{6})$/;
     return !reg.test(value) ? true : false;
 } 

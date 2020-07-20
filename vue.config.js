@@ -17,10 +17,10 @@ module.exports = {
         '@': path.resolve(__dirname, './src'),
         'public': path.resolve(__dirname, './public'),
         '@c': path.resolve(__dirname, './src/components'),
-        'common': path.resolve(__dirname, './src/common'),
-        'api': path.resolve(__dirname, './src/api'),
-        'views': path.resolve(__dirname, './src/views'),
-        'data': path.resolve(__dirname, './src/data')
+        // 'common': path.resolve(__dirname, './src/common'),
+        // 'api': path.resolve(__dirname, './src/api'),
+        // 'views': path.resolve(__dirname, './src/views'),
+        // 'data': path.resolve(__dirname, './src/data')
       }
     }
   },
@@ -58,7 +58,18 @@ module.exports = {
     https: false, // 编译失败时刷新页面
     hot: true, // 开启热加载
     hotOnly: false,
-    proxy: null, // 设置代理
+    proxy: null,
+    // 设置代理
+    proxy: {
+      '/devApi': {
+        target:"http://www.web-jshtml.cn/productapi", // 你请求的第三方接口
+        changeOrigin:true, // 在本地会创建一个虚拟服务端，然后发送请求的数据，并同时接收请求的数据，这样服务端和服务端进行数据的交互就不会有跨域问题
+        pathRewrite:{  // 路径重写，
+          '^/devApi': ''  // 替换target中的请求地址，也就是说以后你在请求http://api.douban.com/v2/XXXXX这个地址的时候直接写成/api即可。
+        }
+      }
+    },
+    
     overlay: {
       // 全屏模式下是否显示脚本错误
       warnings: true,
