@@ -33,6 +33,8 @@ export function validatePwd(value){
  */
 export function validateVCode(value){
     //let reg = /^[0-z0-9]{6}$/
-    let reg = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]{6})$/;
+    //let reg = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]{6})$/;
+    //let reg = /^[a-zA-Z0-9]{6}$/;
+    let reg = /^[A-Za-z0-9]+$/;
     return !reg.test(value) ? true : false;
 } 

@@ -198,10 +198,10 @@ export default {
             root.$message.error('邮箱不可为空！');
             return false
           }
-          if(validateEmail(ruleForm.username)){
-            root.$message.error('邮箱格式有误，请重新输入！');
-            return false
-          }
+          // if(validateEmail(ruleForm.username)){
+          //   root.$message.error('邮箱格式有误，请重新输入！');
+          //   return false
+          // }
           //获取验证码
           let requestData ={
               username: ruleForm.username,
@@ -230,7 +230,7 @@ export default {
               //启动登录或者注册按钮
               loginButtonStatus.value = false
               //调用定时器的方法,直接倒计时
-              countDown(60)
+              countDown(3)
             }).catch(error =>{
               console.log(error)
            })
@@ -262,15 +262,28 @@ export default {
                 username: ruleForm.username,
                 password:sha1(ruleForm.password),
                 code: ruleForm.code,
-                module: 'register'
-              }
-            Login(requestData).then(response => {
-              console.log("登录成功");
-               console.log(response);
-            }).catch(error => {
-
+               // module: 'register'
+            }
+            root.$store.dispatch('app/login', requestData).then(response =>{
+                console.log("登录成功");
+                console.log(response);
+                /**登录跳转页面 */
+                root.$router.push({
+                  name: 'Console'
+                  })
+                }).catch(error => { });
             })
-        })
+            // Login(requestData).then(response => {
+            //   console.log("登录成功");
+            //    console.log(response);
+            //     /**登录跳转页面 */
+            //    root.$router.push({
+            //      name: 'Console'
+            //    })
+            // }).catch(error => {
+
+            // })
+        
 
         /**
          * 注册
