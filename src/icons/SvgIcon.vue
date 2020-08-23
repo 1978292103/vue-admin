@@ -22,7 +22,7 @@ export default {
         }
     },
     setup(props){
-        console.log(props.iconClass);
+       // console.log(props.iconClass);
         const msg = ref("1234567");
         const count = ref(10);
        /**

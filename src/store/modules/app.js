@@ -3,7 +3,7 @@ import {setToken, setUserName, getUserName } from "@/utils/app";
 import { removeToken, removeUserName } from "../../utils/app";
 
 const state = {
-  isCollapse: JSON.parse(sessionStorage.getItem('isCollapse')) || false,
+  isCollapse:  false || JSON.parse(sessionStorage.getItem('isCollapse')),
   to_ken: '',
   username: getUserName() || ''
 }

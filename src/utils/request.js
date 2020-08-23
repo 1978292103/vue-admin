@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Message } from 'element-ui';
+import {getToken, getUserName } from "@/utils/app";
 
 //创建axios，赋值变量service
 const BASEURL = process.env.NODE_ENV === 'production' ? '' : '/devApi';
@@ -17,9 +18,10 @@ service.interceptors.request.use(function (config) {
     //后台需要前端这边传相关的参数
     //Token值
     //userId值
-    console.log(config.headers)
+    //console.log(config.headers)
 
-//  config.headers['Tokey'] = '杨超旭';
+ config.headers['Tokey'] = getToken();
+ config.headers['UserName'] = getUserName();
 
     return config;
   }, function (error) {

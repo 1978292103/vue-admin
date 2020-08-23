@@ -3,7 +3,7 @@
  */
 
 export function stripscript(str) {
-  var pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）&mdash;—|{}【】‘；：”“'。，、？%]")
+  var pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）&;—|{}【】‘；：”“'。，、？%]")
   var rs = "";
   for (var i = 0; i < str.length; i++) {
     rs = rs + str.substr(i, 1).replace(pattern, '');
@@ -32,9 +32,10 @@ export function validatePwd(value){
  * 验证码的效验
  */
 export function validateVCode(value){
+    //console.log(value)
     //let reg = /^[0-z0-9]{6}$/
     //let reg = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]{6})$/;
-    //let reg = /^[a-zA-Z0-9]{6}$/;
-    let reg = /^[A-Za-z0-9]+$/;
+    let reg = /^[a-zA-Z0-9]{6}$/;
+    //let reg = /^[A-Z]{6}$/;
     return !reg.test(value) ? true : false;
 } 

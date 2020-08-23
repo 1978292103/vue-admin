@@ -110,11 +110,11 @@ export default {
       let checkCode = (rule, value, callback) => {
          ruleForm.code = stripscript(value)
          value = ruleForm.code 
-
+          //console.log('======='+value);
           if (value === '') {
             callback(new Error('请输入验证码'));
           }else if (validateVCode(value)){
-            callback(new Error("密码为6-20位的数字与字母组合"))
+            callback(new Error("验证码"))
           }else {
             callback();
         }
@@ -232,7 +232,7 @@ export default {
               //调用定时器的方法,直接倒计时
               countDown(3)
             }).catch(error =>{
-              console.log(error)
+              //console.log(error)
            })
         })
         /**
@@ -247,7 +247,7 @@ export default {
               model.value === 'login' ? login() : register();
               
             } else {
-              console.log('error submit!!');
+            //  console.log('error submit!!');
               return false;
             }
           })
@@ -265,8 +265,8 @@ export default {
                // module: 'register'
             }
             root.$store.dispatch('app/login', requestData).then(response =>{
-                console.log("登录成功");
-                console.log(response);
+              //  console.log("登录成功");
+              //  console.log(response);
                 /**登录跳转页面 */
                 root.$router.push({
                   name: 'Console'
@@ -322,10 +322,10 @@ export default {
             //setTimeout   clearTimeout()执行一次
             //setInterval   clearInterval(变量)不断的执行，需要条件才会停止
             let time = number
-            console.log(time)
+            //console.log(time)
           timer.value = setInterval(() => {
               time --;
-              console.log(time)
+             // console.log(time)
               if(time === 0){
                   clearInterval(timer.value);
 

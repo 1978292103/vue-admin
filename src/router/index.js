@@ -7,6 +7,12 @@ Vue.use(VueRouter);
 //引入布局组件
 import Layout from "@/views/Layout/index.vue";
 
+// router文件夹-->index.js文件
+//cv以下代码解决路由地址重复的报错问题(一劳永逸)
+const originalPush = VueRouter.prototype.push
+   VueRouter.prototype.push = function push(location) {
+   return originalPush.call(this, location).catch(err => err)
+}
 
 const routes = [
   {
@@ -24,7 +30,7 @@ const routes = [
     meta: {
       name: "登录"
     },
-    component: () => import("../views/Login/index.vue")
+    component: () => import("../views/login/index.vue")
   },
   {
     path: "/console",

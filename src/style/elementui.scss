@@ -21,9 +21,48 @@ li.el-submenu{
     }
   }
 .el-menu--vertical{
-  .el-menu {}
+  //.el-menu {}
   .el-menu-item {line-height: 56px;}
   .el-menu-item:hover {
     background-color:  red !important;
+  }
+}
+
+.pull-left{float:left  !important;}
+.pull-right{float:right !important;}
+
+/*
+table的样式
+*/
+div.el-table{
+   td,th { text-align: center;}
+   th{ 
+     font-weight: bold;
+     color: #344a5f;
+    }
+    td{
+      font-size: 14px;
+    }
+    
+}
+
+/**  dialog 样式*/
+.el-dialog__body{
+  padding: 30px 47px  !important;
+}
+
+.el-dialog__footer {
+  text-align:  center !important;
+  padding-bottom: 20 !important;
+  .el-button {
+    width: 150px;
+    margin: 0 11px;
+  }
+}
+div.el-form-item {margin-bottom: 22px;}
+/** from 样式**/
+.el-form{
+  .el-form-item:last-child{
+    margin-bottom: 0 !important;
   }
 }

@@ -19,7 +19,7 @@ export default {
     setup(props, {root}){
         const username = computed(() => root.$store.state.app.username )
         const navMenuState = () => {
-            console.log("==============");
+         //   console.log("==============");
             root.$store.commit('app/SET_COLLAPSE')
             //root.$store.dispatch('setmenuStatus')
         }
@@ -83,6 +83,5 @@ export default {
    
 }
 
-.pull-left{float:left  !important;}
-.pull-right{float:right !important;}
+
 </style>

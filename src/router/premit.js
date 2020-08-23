@@ -13,7 +13,7 @@ router.beforeEach((to, from, next) => {
             removeUserName();
             store.commit("app/SET_TOKEN",'');
             store.commit("app/SET_USERNAME",'');
-            next()
+            next();
         }else{
             //获得用户的角色
             //动态分配路由权限
@@ -25,9 +25,9 @@ router.beforeEach((to, from, next) => {
          * 2 to = /index
          */
         //路由动态添加，分配菜单，每个角色分配不同的菜单
-        console.log("存在");
+      //  console.log("存在");
     }else{
-        console.log("不存在");
+      //  console.log("不存在");
         if(whiteRouter.indexOf(to.path) !== -1){
             next();  //指向to
         }else{

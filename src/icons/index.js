@@ -16,7 +16,7 @@ Vue.component('svg-icon',SvgIcon);
  const req = require.context('./svg',false,/\.svg$/);
 // es6
  const requireAll = (requireContext) => {
-     console.log(requireContext.keys().map(requireContext));
+    // console.log(requireContext.keys().map(requireContext));
      
      return requireContext.keys().map(requireContext)
  }
