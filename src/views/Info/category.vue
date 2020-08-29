@@ -282,7 +282,7 @@ export default {
          * watch
          */
         watch(() => categoryItem.item, (value) => {
-            console.log(value)
+            //console.log(value)
             category.item  = value
         })
 
