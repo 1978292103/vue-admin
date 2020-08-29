@@ -104,7 +104,7 @@ export default {
             }
             GetList(requestData).then(response => {
                 let responseData = response.data.data.data[0];
-                console.log(response);
+               // console.log(response);
                 data.form =  {    //表单数据
                        category: responseData.categoryId,
                        title: responseData.title,

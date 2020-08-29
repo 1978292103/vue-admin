@@ -69,14 +69,15 @@
          <!--  表格数据开始 -->
          <el-table :data="tableData.item" border v-loading="loadingData"  @selection-change="handleSelectionChange" style="width: 100%">
             <el-table-column type="selection" width="45"> </el-table-column>
-            <el-table-column  prop="title"  label="标题" width="500"> </el-table-column>
+            <el-table-column  prop="title"  label="标题" > </el-table-column>
             <el-table-column  prop="categoryId" label="类型"   :formatter="toCategory" width="120">  </el-table-column>
-            <el-table-column  prop="createDate"   label="日期"  :formatter="toData" width="207"></el-table-column>
+            <el-table-column  prop="createDate"   label="日期"  :formatter="toData" width="197"></el-table-column>
             <el-table-column  prop="user"  label="管理员"    width="115">  </el-table-column>
-            <el-table-column label="操作">
+            <el-table-column label="操作" width="270" >
                    <template slot-scope="scope">
                        <el-button type="danger" size="mini" @click="deleteItem(scope.row.id)">删除</el-button>
-                       <el-button type="success"  size="mini" @click="editInfo(scope.row.id)">编辑</el-button>
+                       <el-button type="success" size="mini" @click="editInfo(scope.row.id)">编辑</el-button>
+                       <el-button type="success" size="mini" @click="detailed(scope.row)" >编辑详情</el-button>
                    </template>
             </el-table-column>
         </el-table>
@@ -263,6 +264,34 @@ export default {
             infoId.value  = id;
             dialog_info_edit.value = true;
         }
+
+        const detailed = (data) => {
+            //先存值
+            // root.$store.commit("infoDetailed/SET_ID",data.id);
+            // root.$store.commit("infoDetailed/SET_TITLE",data.title);
+
+             root.$store.commit("infoDetailed/UPDATE_STATE_VALUE",{
+                 id:{
+                     value: data.id,
+                     sessionKey: 'infoId',
+                     session: true
+                 },
+                 title:{
+                     value: data.title,
+                     sessionKey: 'infoTitle',
+                     session: true
+                 }
+             });
+            //跳转页面
+            root.$router.push({
+                name: "InfoDetailed",
+                params:{
+                    id:data.id,
+                    title:data.title
+                }
+            })
+        }
+
         /**
          * 获取分类
          */
@@ -340,7 +369,8 @@ export default {
             closeDialog,
             deleteItem,
             editInfo,
-            deleteAll
+            deleteAll,
+            detailed
             
              
 
